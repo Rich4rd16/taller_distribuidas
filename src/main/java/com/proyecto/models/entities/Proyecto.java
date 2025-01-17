@@ -1,8 +1,9 @@
 package com.proyecto.models.entities;
 
+import com.proyecto.validators.FechaValida;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import java.time.LocalDate;;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "Proyecto")
@@ -25,18 +26,18 @@ public class Proyecto {
     private String descripcion;
 
     @Column(nullable = false)
+    @NotNull(message = "La duración no puede estar vacía")
     @Min(value = 1, message = "La duración debe ser mayor a 0")
     @Max(value = 120, message = "La duración no puede exceder 120 meses")
-    @Digits(integer = 3, fraction = 0,
-            message = "La duración debe ser un número entero")
-    private int duracionMeses;
+    @Pattern(regexp = "^[0-9]+$", message = "La duración solo puede contener números")
+    private String duracionMeses; // Cambiado a String para validar el formato
 
     @Column(nullable = false)
     @NotNull(message = "La fecha de inicio no puede ser nula")
-    @Future(message = "La fecha de inicio debe ser posterior a la fecha actual")
-    private LocalDate fechaInicio;
+    @FechaValida
+    private String fechaInicio;
 
-    // Getters y Setters permanecen igual
+    // Getters y Setters actualizados
     public long getId() {
         return id;
     }
@@ -61,19 +62,28 @@ public class Proyecto {
         this.descripcion = descripcion;
     }
 
-    public int getDuracionMeses() {
+    public String getDuracionMeses() {
         return duracionMeses;
     }
 
-    public void setDuracionMeses(int duracionMeses) {
+    public void setDuracionMeses(String duracionMeses) {
         this.duracionMeses = duracionMeses;
     }
 
-    public LocalDate getFechaInicio() {
+    public String getFechaInicio() {
         return fechaInicio;
     }
 
-    public void setFechaInicio(LocalDate fechaInicio) {
+    public void setFechaInicio(String fechaInicio) {
         this.fechaInicio = fechaInicio;
+    }
+
+    // Método auxiliar para obtener la duración como entero
+    public int getDuracionMesesAsInt() {
+        try {
+            return Integer.parseInt(duracionMeses);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 }
